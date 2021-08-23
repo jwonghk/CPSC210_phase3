@@ -63,7 +63,7 @@ public class Customer {
 
 
     //EFFECT: return count of individual items
-    public int countIndividiualItems(int type) {
+    public int countIndividualItems(int type) {
         int total = 0;
         for (FoodItem it : this.fdList.foodItemsOrdered) {
             if (it.foodID == type) {

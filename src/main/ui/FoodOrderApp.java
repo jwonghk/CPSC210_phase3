@@ -1,28 +1,25 @@
 package ui;
 
-import model.Customer;
-import model.FoodItem;
-import model.WorkRoom;
+import model.*;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
-import java.util.Locale;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.List;
 import java.util.Scanner;
 
 
 //Source: Mainly from the Teller application posted on course edx site
 public class FoodOrderApp {
 
-    private String JSON_STORE = "./data/workroom.json";
+    private String jsonStore;
     private Scanner input;
     private WorkRoom workRoom;
     private JsonWriter jsonWriter;
     private JsonReader jsonReader;
     private String customerName;
     private Customer customer;
-
-
-
 
 
     //EFFECTS: run the Food Order application
@@ -49,7 +46,14 @@ public class FoodOrderApp {
                 processCommand(command);
             }
         }
-        saveToJSON();
+        System.out.println("Are you interested in saving your order history? 1 for yes, 0 for no");
+        Scanner input = new Scanner(System.in);
+        String history;
+        history = input.next();
+        history.toLowerCase();
+        if (history.equals("1")) {
+            saveWorkRoom();
+        }
 
         System.out.println("\nPlease visit again!");
     }
@@ -63,6 +67,10 @@ public class FoodOrderApp {
             processBurger();
         } else if (command.equals("c")) {
             processCancel();
+        } else if (command.equals("l")) {
+            loadWorkRoom();
+        } else if (command.equals("p")) {
+            printThingies();
         } else {
             System.out.println("Selection not valid ...");
         }
@@ -72,40 +80,39 @@ public class FoodOrderApp {
     //MODIFIES: this
     //EFFECTS: initializes Customer
     private void init() {
-//        Scanner nameInput = new Scanner(System.in);
-//        System.out.println("Please enter your name: ");
-//        customerName = nameInput.next();
-//        customerName.toLowerCase();
-//        customer = new Customer(customerName);
-
-        System.out.println("Are you first time here?");
-        System.out.println("Press 1 for yes, and 0 for no");
-        Scanner input = new Scanner(System.in);
-        String yesNo;
-        yesNo = input.next();
-
         System.out.println("What is your name?");
         Scanner nameInput = new Scanner(System.in);
         customerName = nameInput.next();
         customerName.toLowerCase();
         customer = new Customer(customerName);
-
-        if (yesNo.equals("1")) {
-            createNewJson();
-        } else {
-            loadOldJson();
+        workRoom = new WorkRoom(customerName);
+        boolean keepSelecting;
+        keepSelecting = true;
+        while (keepSelecting) {
+            System.out.println("Are you first time here? Press 1 for yes, and 0 for no");
+            Scanner input = new Scanner(System.in);
+            String yesNo;
+            yesNo = input.next();
+            if (yesNo.equals("1")) {
+                createNewJson();
+                keepSelecting = false;
+            } else if (yesNo.equals("0")) {
+                loadOldJson();
+                keepSelecting = false;
+            } else {
+                System.out.println("Invalid Selection, please enter 1 or 0 only");
+            }
         }
-
-
-
     }
 
     //EFFECTS: display menu of options to user
     private void displayMenu() {
         System.out.println("\nSelect from:");
-        System.out.println("\td -> drinks");
-        System.out.println("\tb -> burgers");
+        System.out.println("\td -> drinks (Coca-cola or Pepsi)");
+        System.out.println("\tb -> burgers (Chicken or Beef)");
         System.out.println("\tc -> Cancel items");
+        System.out.println("\tp -> print all of your history of orderings");
+        System.out.println("\tl -> load work room from file");
         System.out.println("\tf -> finished ordering!");
     }
 
@@ -119,19 +126,22 @@ public class FoodOrderApp {
 
         System.out.println("How many cokes? (Coke is $1 each)");
         coke = input.nextInt();
+        Thingy co = new Thingy("Coca cola", Category.DRINK);
         if (coke > 0) {
             for (int i = 0; i < coke; i++) {
                 customer.addFood(fd1);
+                workRoom.addThingy(co);
             }
         }
         System.out.println("How many pepsi? (Pepsi is $2 each)");
         pep = input.nextInt();
+        Thingy p = new Thingy("Pepsi", Category.DRINK);
         if (pep > 0) {
             for (int i = 0; i < pep; i++) {
                 customer.addFood(fd2);
+                workRoom.addThingy(p);
             }
         }
-
         printBalanceAndFood();
     }
 
@@ -146,20 +156,23 @@ public class FoodOrderApp {
 
         System.out.println("How many chickens sandwiches? (Chicken is $6 each)");
         chicken = input.nextInt();
+        Thingy chi = new Thingy("Chicken", Category.FOOD);
         if (chicken > 0) {
             for (int i = 0; i < chicken; i++) {
                 customer.addFood(fd3);
-                customer
-            }
-        }
-        System.out.println("How many beef sandwiches? (Beef is $8 each)");
-        beef = input.nextInt();
-        if (beef > 0) {
-            for (int i = 0; i < beef; i++) {
-                customer.addFood(fd4);
+                workRoom.addThingy(chi);
             }
         }
 
+        System.out.println("How many beef sandwiches? (Beef is $8 each)");
+        beef = input.nextInt();
+        Thingy bf = new Thingy("Beef", Category.FOOD);
+        if (beef > 0) {
+            for (int i = 0; i < beef; i++) {
+                customer.addFood(fd4);
+                workRoom.addThingy(bf);
+            }
+        }
         printBalanceAndFood();
     }
 
@@ -181,41 +194,76 @@ public class FoodOrderApp {
         //for (int i = 0; i < numbCancel; i++) {
         customer.removeFood(itemId, numbCancel);
         //}
-
         printBalanceAndFood();
 
     }
 
-    //EFFECTS: save ordered history to jSON file
-    public void saveToJSON() {
-
+    //EFFECTS: Show previous order history
+    private void processHistory() {
+        printThingies();
     }
 
     //EFFECTS: create new .json file if new user
     public void createNewJson() {
         System.out.println("first time");
-        JSON_STORE = "./data/" + customerName + "workroom.json";
-
+        jsonStore = "./data/" + customerName + "workroom.json";
     }
 
     //EFFECTS: load old .json file
     public void loadOldJson() {
         System.out.println("have been here");
-        JSON_STORE = "./data/" + customerName + "workroom.json";
+        jsonStore = "./data/" + customerName + "workroom.json";
+    }
+
+
+
+    // EFFECTS: saves the workroom to file
+    private void saveWorkRoom() {
+        try {
+            jsonWriter = new JsonWriter(jsonStore);
+            jsonWriter.open();
+            jsonWriter.write(workRoom);
+            jsonWriter.close();
+            System.out.println("Saved " + workRoom.getName() + " to " + jsonStore);
+        } catch (FileNotFoundException e) {
+            System.out.println("Unable to write to file: " + jsonStore);
+        }
+    }
+
+
+    private void printThingies() {
+        List<Thingy> thingies = workRoom.getThingies();
+        for (Thingy t : thingies) {
+            System.out.println(t);
+        }
+    }
+
+
+
+    // MODIFIES: this
+    // EFFECTS: loads workroom from file
+    private void loadWorkRoom() {
+        try {
+            JsonReader jsonReader = new JsonReader(jsonStore);
+            workRoom = jsonReader.read();
+            System.out.println("Loaded " + workRoom.getName() + " from " + jsonStore);
+
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + jsonStore);
+        }
     }
 
 
     //Effects: prints current balance and food ordered
     private void printBalanceAndFood() {
-        System.out.println("Your current orders are following:"
-                + "\tCoke " + customer.countIndividiualItems(1));
+        System.out.println("Your current orders are following:");
+        System.out.println("\tCoke " + customer.countIndividualItems(1));
         System.out.println(
-                 "\tPepsi " + customer.countIndividiualItems(2));
+                 "\tPepsi " + customer.countIndividualItems(2));
         System.out.println(
-                "\tChicken " + customer.countIndividiualItems(3));
+                "\tChicken " + customer.countIndividualItems(3));
         System.out.println(
-                "\tBeef " + customer.countIndividiualItems(4));
-
+                "\tBeef " + customer.countIndividualItems(4));
         System.out.println("Your current"
                 + "total is: " + customer.totalCost());
     }

@@ -11,7 +11,7 @@ import java.util.List;
 // Represents a workroom having a collection of thingies
 public class WorkRoom implements Writable {
     private String name;
-    private List<FoodThingy> thingies;
+    private List<Thingy> thingies;
 
     // EFFECTS: constructs workroom with a name and empty list of thingies
     public WorkRoom(String name) {
@@ -25,12 +25,12 @@ public class WorkRoom implements Writable {
 
     // MODIFIES: this
     // EFFECTS: adds thingy to this workroom
-    public void addThingy(FoodThingy thingy) {
+    public void addThingy(Thingy thingy) {
         thingies.add(thingy);
     }
 
     // EFFECTS: returns an unmodifiable list of thingies in this workroom
-    public List<FoodThingy> getThingies() {
+    public List<Thingy> getThingies() {
         return Collections.unmodifiableList(thingies);
     }
 
@@ -38,6 +38,8 @@ public class WorkRoom implements Writable {
     public int numThingies() {
         return thingies.size();
     }
+
+
 
     @Override
     public JSONObject toJson() {
@@ -47,14 +49,14 @@ public class WorkRoom implements Writable {
         return json;
     }
 
+
     // EFFECTS: returns things in this workroom as a JSON array
     private JSONArray thingiesToJson() {
         JSONArray jsonArray = new JSONArray();
 
-        for (FoodThingy t : thingies) {
+        for (Thingy t : thingies) {
             jsonArray.put(t.toJson());
         }
-
         return jsonArray;
     }
 }

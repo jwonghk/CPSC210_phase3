@@ -3,11 +3,12 @@ package model;
 import org.json.JSONObject;
 import persistence.Writable;
 
-public class FoodThingy implements Writable {
+public class Thingy implements Writable {
     private String name;
     private Category cate;
 
-    public FoodThingy(String foodname, Category foodcate) {
+
+    public Thingy(String foodname, Category foodcate) {
         this.name = foodname;
         this.cate = foodcate;
     }
@@ -19,6 +20,11 @@ public class FoodThingy implements Writable {
     public Category getCate() {
         return this.cate;
     }
+
+    public String toString() {
+        return cate + ":" + name;
+    }
+
 
     @Override
     public JSONObject toJson() {

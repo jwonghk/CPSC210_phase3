@@ -1,5 +1,5 @@
 package model;
 
 public enum Category {
-    DRINK, FOOD
+    DRINK, FOOD, WOODWORK, METALWORK, STITCHING, KNITTING;
 }

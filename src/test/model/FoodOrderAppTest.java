@@ -77,10 +77,10 @@ public class FoodOrderAppTest {
         testCustomer.addFood(foodItem2);
         testCustomer.addFood(foodItem3);  // Coke is $1 each
 
-        assertEquals(3,testCustomer.countIndividiualItems(2));
-        assertEquals(0,testCustomer.countIndividiualItems(4));
-        assertEquals(1,testCustomer.countIndividiualItems(1));
-        assertEquals(1,testCustomer.countIndividiualItems(3));
+        assertEquals(3,testCustomer.countIndividualItems(2));
+        assertEquals(0,testCustomer.countIndividualItems(4));
+        assertEquals(1,testCustomer.countIndividualItems(1));
+        assertEquals(1,testCustomer.countIndividualItems(3));
     }
 
     @Test

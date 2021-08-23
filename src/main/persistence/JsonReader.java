@@ -1,7 +1,7 @@
 package persistence;
 
 import model.Category;
-import model.FoodThingy;
+import model.Thingy;
 import model.WorkRoom;
 
 import java.io.IOException;
@@ -33,7 +33,7 @@ public class JsonReader {
     private String readFile(String source) throws IOException {
         StringBuilder contentBuilder = new StringBuilder();
 
-        try (Stream<String> stream = Files.lines( Paths.get(source), StandardCharsets.UTF_8)) {
+        try (Stream<String> stream = Files.lines(Paths.get(source), StandardCharsets.UTF_8)) {
             stream.forEach(s -> contentBuilder.append(s));
         }
 
@@ -63,7 +63,7 @@ public class JsonReader {
     private void addThingy(WorkRoom wr, JSONObject jsonObject) {
         String name = jsonObject.getString("name");
         Category category = Category.valueOf(jsonObject.getString("category"));
-        FoodThingy thingy = new FoodThingy(name, category);
+        Thingy thingy = new Thingy(name, category);
         wr.addThingy(thingy);
     }
 }

@@ -1,4 +1,5 @@
 package persistence;
+
 import model.WorkRoom;
 import org.json.JSONObject;
 
@@ -29,6 +30,7 @@ public class JsonWriter {
         JSONObject json = wr.toJson();
         saveToFile(json.toString(TAB));
     }
+
 
     // MODIFIES: this
     // EFFECTS: closes writer
