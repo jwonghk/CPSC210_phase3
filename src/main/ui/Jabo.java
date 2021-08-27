@@ -11,6 +11,8 @@ public class Jabo extends JFrame implements ActionListener {
     JButton jb2 = new JButton("Have been here");
     JTextField jtf = new JTextField();
 
+
+
     JPanel jpanel = new JPanel();
 
 
@@ -32,6 +34,10 @@ public class Jabo extends JFrame implements ActionListener {
         jtf.setBounds(70, 250, 150, 30);
         jtf.setToolTipText("Enter without spaces");
         jtf.setBackground(Color.yellow);
+        JLabel jlab = new JLabel("Enter input here: ");
+        jlab.setBounds(70, 200, 100, 70);
+        jpanel.add(jlab);
+
 
 
         // set Panel size and location
@@ -46,9 +52,28 @@ public class Jabo extends JFrame implements ActionListener {
         setTitle("Food Ordering");
         setSize(1800, 2400);
 
-
     }
 
+
+    public void keyListen(Component comp) {
+        comp.addKeyListener(new KeyListener() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyPressed(KeyEvent e) {
+
+            }
+
+            @Override
+            public void keyReleased(KeyEvent e) {
+
+            }
+        });
+
+    }
 
     public void actionPerformed(ActionEvent ae){
 
