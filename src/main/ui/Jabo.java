@@ -12,13 +12,6 @@ public class Jabo extends JFrame implements ActionListener {
     JTextField jtf = new JTextField();
     JTextArea jta;
 
-    JButton smpJb1;
-    JButton smpJb2;
-    JButton smpJb3;
-    JButton smpJb4;
-    JButton smpJb5;
-    JButton smpJb6;
-
     JButton displayCurrentSum;
     JButton doneOrdering;
     JButton saveHistory;
@@ -63,7 +56,7 @@ public class Jabo extends JFrame implements ActionListener {
 
         setBoundAndAddtoPanel(jpanel, jlabel2, 70, 350, 400, 100);
 
-        keyListen(jtf);
+        nameListen(jtf);
 
         messageArea();
         placeOrderPanel();
@@ -134,9 +127,13 @@ public class Jabo extends JFrame implements ActionListener {
         setBoundAndAddtoPanel(jcheckOut, doneOrdering, 0, 70, 200, 70);
         setBoundAndAddtoPanel(jcheckOut, saveHistory, 0, 140, 200, 70);
 
-        displayCurrentSum.addActionListener(this);
-        doneOrdering.addActionListener(this);
-        saveHistory.addActionListener(this);
+//        displayCurrentSum.addActionListener(this);
+//        doneOrdering.addActionListener(this);
+//        saveHistory.addActionListener(this);
+//
+        keyListen(displayCurrentSum);
+        keyListen(doneOrdering);
+        keyListen(saveHistory);
 
     }
 
@@ -154,12 +151,12 @@ public class Jabo extends JFrame implements ActionListener {
     }
 
     //EFFECT: Listen for the "Enter" key in the JTextArea provided
-    public void keyListen(JTextField comp) {
+    public void nameListen(JTextField comp) {
         comp.addActionListener(new ActionListener() {
+            JTextField jtf2;
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                JTextField jtf2;
                 jtf2 = (JTextField)e.getSource();
                 customerName = jtf2.getText();
                 jlabel2.setText("The name of the customer is: " + customerName);
@@ -168,12 +165,24 @@ public class Jabo extends JFrame implements ActionListener {
 
     }
 
+
+
+    public void keyListen(JButton jbut) {
+        jbut.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                jlabel2.setText("button hit " + e.getActionCommand());
+            }
+        });
+    }
+
     //EFFECTS: Display an area to display message
     public void messageArea() {
         jta = new JTextArea();
         jta.setBounds(900, 10, 450, 500);
         jpanel.add(jta);
         jpanel.setSize(1200, 1300);
+        jta.setEditable(false);
     }
 
 
