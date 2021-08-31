@@ -5,7 +5,12 @@ import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
 
+import model.*;
+import persistence.*;
+
+
 public class Jabo extends JFrame implements ActionListener {
+
 
     JButton jb1 = new JButton("First time here");
     JButton jb2 = new JButton("Have been here");
@@ -15,6 +20,7 @@ public class Jabo extends JFrame implements ActionListener {
     JButton displayCurrentSum;
     JButton doneOrdering;
     JButton saveHistory;
+    JButton loadHistory;
 
     JPanel jpanel = new JPanel();
     String customerName;
@@ -118,23 +124,24 @@ public class Jabo extends JFrame implements ActionListener {
 
         JPanel jcheckOut = new JPanel();
         jcheckOut.setLayout(null);
-        setBoundAndAddtoPanel(jpanel, jcheckOut,290, 700, 200, 210);
+        setBoundAndAddtoPanel(jpanel, jcheckOut,290, 700, 400, 140);
         displayCurrentSum = new JButton("Current Total");
         doneOrdering = new JButton("Finish ordering");
         saveHistory = new JButton("Save current order history");
+        loadHistory = new JButton("Load previous order history");
+
 
         setBoundAndAddtoPanel(jcheckOut, displayCurrentSum, 0, 0, 200, 70);
         setBoundAndAddtoPanel(jcheckOut, doneOrdering, 0, 70, 200, 70);
-        setBoundAndAddtoPanel(jcheckOut, saveHistory, 0, 140, 200, 70);
+        setBoundAndAddtoPanel(jcheckOut, saveHistory, 200, 70, 200, 70);
+        setBoundAndAddtoPanel(jcheckOut, loadHistory, 200, 0, 200, 70);
 
-//        displayCurrentSum.addActionListener(this);
-//        doneOrdering.addActionListener(this);
-//        saveHistory.addActionListener(this);
-//
+
         keyListen(displayCurrentSum);
         keyListen(doneOrdering);
         keyListen(saveHistory);
-
+        keyListen((loadHistory));
+        loadHistory.addActionListener(this);
     }
 
 
@@ -194,6 +201,9 @@ public class Jabo extends JFrame implements ActionListener {
             jta.setText("You have ordered x number of burgers");
         } else if (e.getSource() == saveHistory) {
             jta.setText("Ordering history");
+        } else if (e.getSource() == loadHistory) {
+            jta.setText("load history");
+
         }
 
     }
