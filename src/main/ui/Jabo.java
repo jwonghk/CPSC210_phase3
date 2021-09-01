@@ -4,6 +4,9 @@ import javax.swing.*;
 import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.*;
+import java.io.IOException;
+import java.util.List;
+import java.util.Scanner;
 
 import model.*;
 import persistence.*;
@@ -25,6 +28,14 @@ public class Jabo extends JFrame implements ActionListener {
     JPanel jpanel = new JPanel();
     String customerName;
     JLabel jlabel2 = new JLabel();
+
+    private String jsonStore;
+    private Scanner input;
+    private WorkRoom workRoom;
+    private JsonWriter jsonWriter;
+    private JsonReader jsonReader;
+    private Customer customer;
+
 
 
 
@@ -68,6 +79,9 @@ public class Jabo extends JFrame implements ActionListener {
         placeOrderPanel();
         cancelOrderPanel();
         checkOutPanel();
+
+        jb1.addActionListener(this);
+        jb2.addActionListener(this);
 
     }
 
@@ -121,7 +135,6 @@ public class Jabo extends JFrame implements ActionListener {
     }
 
     public void checkOutPanel() {
-
         JPanel jcheckOut = new JPanel();
         jcheckOut.setLayout(null);
         setBoundAndAddtoPanel(jpanel, jcheckOut,290, 700, 400, 140);
@@ -141,6 +154,9 @@ public class Jabo extends JFrame implements ActionListener {
         keyListen(doneOrdering);
         keyListen(saveHistory);
         keyListen((loadHistory));
+        displayCurrentSum.addActionListener(this);
+        doneOrdering.addActionListener(this);
+        saveHistory.addActionListener(this);
         loadHistory.addActionListener(this);
     }
 
@@ -166,10 +182,14 @@ public class Jabo extends JFrame implements ActionListener {
             public void actionPerformed(ActionEvent e) {
                 jtf2 = (JTextField)e.getSource();
                 customerName = jtf2.getText();
+                customerName = customerName.toLowerCase();
                 jlabel2.setText("The name of the customer is: " + customerName);
             }
         });
+    }
 
+    public void createNewJson() {
+        jsonStore = "./data/" + customerName + "workroom.json";
     }
 
 
@@ -196,15 +216,125 @@ public class Jabo extends JFrame implements ActionListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == displayCurrentSum) {
-            jta.setText("The number of drink you have ordered so far is: ");
+            jta.setText("The number  ");
         } else if (e.getSource() == doneOrdering) {
-            jta.setText("You have ordered x number of burgers");
+            jta.setText("You have ");
         } else if (e.getSource() == saveHistory) {
             jta.setText("Ordering history");
         } else if (e.getSource() == loadHistory) {
-            jta.setText("load history");
-
+            jta.append(printThingies());
+        } else if (e.getSource() == jb1) {
+            createNewJson();
+            jta.setText("My first time here");
+        } else if (e.getSource() == jb2) {
+            jta.setText("Have been here");
+            loadWorkRoom();
         }
 
     }
+
+
+
+    private void loadWorkRoom() {
+        try {
+            jsonStore = "./data/" + customerName + "workroom.json";
+            JsonReader jsonReader = new JsonReader(jsonStore);
+            workRoom = jsonReader.read();
+            System.out.println("Loaded " + workRoom.getName() + " from " + jsonStore);
+
+        } catch (IOException e) {
+            System.out.println("Unable to read from file: " + jsonStore);
+        }
+    }
+
+    //EFFECT: Print thingies from workRoom
+    private String printThingies() {
+        List<Thingy> thingies = workRoom.getThingies();
+        String thingyToText = "";
+        int count = 1;
+        for (Thingy t : thingies) {
+            thingyToText = thingyToText.concat(count + ")" + t.getCate() + ":" + t.getName() + "\n");
+            System.out.println("Current count is: " + count + "  " + thingyToText);
+            count++;
+        }
+        return thingyToText;
+    }
+
+
+    //MODIFIES: this
+    //EFFECTS: add drink or food to the order list
+    private void processDrinkandFood(int foodID, int quantity) {
+        if (foodID == 1) {
+            addCoke(quantity);
+        } else if (foodID == 2) {
+            addPepsi(quantity);
+        } else if (foodID == 3) {
+            addChicken(quantity);
+        } else if (foodID == 4) {
+            addBeef(quantity);
+        }
+    }
+
+    private void addCoke(int coke) {
+        FoodItem fd1 = new FoodItem(1); // 1 is coke
+        Thingy co = new Thingy("Coca cola", Category.DRINK);
+        for (int i = 0; i < coke; i++) {
+            customer.addFood(fd1);
+            workRoom.addThingy(co);
+        }
+    }
+
+    private void addPepsi(int pep) {
+        FoodItem fd2 = new FoodItem(2); // 2 is pepsi
+        Thingy co = new Thingy("Pepsi", Category.DRINK);
+        for (int i = 0; i < pep; i++) {
+            customer.addFood(fd2);
+            workRoom.addThingy(co);
+        }
+    }
+
+    private void addChicken(int chicken) {
+        FoodItem fd3 = new FoodItem(3); // 3 is chicken
+        Thingy co = new Thingy("Chicken Burger", Category.FOOD);
+        for (int i = 0; i < chicken; i++) {
+            customer.addFood(fd3);
+            workRoom.addThingy(co);
+        }
+    }
+
+    private void addBeef(int beef) {
+        FoodItem fd4 = new FoodItem(4); // 4 is beef
+        Thingy co = new Thingy("Beef Burger", Category.FOOD);
+        for (int i = 0; i < beef; i++) {
+            customer.addFood(fd4);
+            workRoom.addThingy(co);
+        }
+    }
+
+
+
+    //Effects: cancel (or remove) food items from ordered lists
+    private void processCancel() {
+        int itemId;
+        int numbCancel;
+        System.out.println("Please enter Item to cancel");
+        System.out.println("Please type 1 for Coke");
+        System.out.println("Please type 2 for Pepsi");
+        System.out.println("Please type 3 for Chicken");
+        System.out.println("Please type 4 for Beef");
+        itemId = input.nextInt();
+
+        System.out.println("How many to cancel?");
+        numbCancel = input.nextInt();
+
+        //for (int i = 0; i < numbCancel; i++) {
+        customer.removeFood(itemId, numbCancel);
+        //}
+        //printBalanceAndFood();
+
+    }
+
+
+
+
 }
