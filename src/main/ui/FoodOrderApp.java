@@ -1,12 +1,14 @@
 package ui;
 
 import model.*;
+import org.json.JSONArray;
 import persistence.JsonReader;
 import persistence.JsonWriter;
 
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
@@ -192,11 +194,18 @@ public class FoodOrderApp {
         System.out.println("How many to cancel?");
         numbCancel = input.nextInt();
 
-        //for (int i = 0; i < numbCancel; i++) {
-        customer.removeFood(itemId, numbCancel);
-        //}
-        printBalanceAndFood();
+        if (itemId == 1) {
+            workRoom = cancelThingy("Coca cola", numbCancel);
+        } else if (itemId == 2) {
+            workRoom = cancelThingy("Pepsi", numbCancel);
+        } else if (itemId == 3) {
+            workRoom = cancelThingy("Chicken", numbCancel);
+        } else if (itemId == 4) {
+            workRoom = cancelThingy("Beef", numbCancel);
+        }
 
+        //customer.removeFood(itemId, numbCancel);
+        //printBalanceAndFood();
     }
 
     //EFFECTS: Show previous order history
@@ -239,6 +248,21 @@ public class FoodOrderApp {
         }
     }
 
+    private WorkRoom cancelThingy(String foodname, int numb) {
+        int i = 0;
+        List<Thingy> thingies = workRoom.getThingies();
+        WorkRoom newWorkRoom = new WorkRoom(customerName);
+        for (Thingy t : thingies) {
+            if (!t.getName().equals(foodname)) {
+                newWorkRoom.addThingy(t);
+            } else if (t.getName().equals(foodname) && i >= numb) {
+                newWorkRoom.addThingy(t);
+            } else if (t.getName().equals(foodname) && i < numb) {
+                i++;
+            }
+        }
+        return newWorkRoom;
+    }
 
 
     // MODIFIES: this

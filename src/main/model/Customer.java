@@ -79,9 +79,6 @@ public class Customer {
     public String toString() {
         String balanceStr = String.format("%.2f", this.balance);
         return "Your total items' cost is: $" + balanceStr;
-
     }
-
-
 }
 
